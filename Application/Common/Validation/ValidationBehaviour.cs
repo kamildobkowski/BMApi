@@ -1,15 +1,17 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Common.Validation;
 
 public class ValidationBehaviour<TRequest, TResponse>
-(IEnumerable<IValidator<TRequest>> validators)
+(IEnumerable<IValidator<TRequest>> validators, ILogger<ValidationBehaviour<TRequest,TResponse>> logger)
 	: IPipelineBehavior<TRequest, TResponse> 
 	where TRequest : notnull
 {
 	public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
 	{
+		logger.LogInformation($"Request {typeof(TRequest).Name} invoked");
 		var context = new ValidationContext<TRequest>(request);
 		
 		var validationFailures
